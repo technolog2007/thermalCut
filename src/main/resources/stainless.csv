@@ -1,0 +1,19 @@
+﻿thickness;speed;gas_consumption;gas;material
+0,8;6380,000;0,0023;Nitrogen, N2;stainless
+1;5880,000;0,0115;Nitrogen, N2;stainless
+1,5;4630,000;0,0265;Nitrogen, N2;stainless
+2;3935,000;0,0116;Nitrogen, N2;stainless
+3;2550,000;0,0502;Nitrogen, N2;stainless
+4;1580,000;0,3048;Nitrogen, N2;stainless
+5;1700,000;0,1177;Nitrogen, N2;stainless
+6;1225,000;0,0463;Nitrogen, N2;stainless
+8;895,000;0,0656;Nitrogen, N2;stainless
+10;1300,000;0,0719;Nitrogen, N2;stainless
+12;900,000;0,1318;Nitrogen, N2;stainless
+14;658,000;0,0698;Nitrogen, N2;stainless
+16;503,000;0,4734;Nitrogen, N2;stainless
+18;423,000;0,0869;Nitrogen, N2;stainless
+20;360,000;0,4129;Nitrogen, N2;stainless
+22;322,000;0,1637;Nitrogen, N2;stainless
+24;282,000;0,0479;Nitrogen, N2;stainless
+25;260,000;0,0520;Nitrogen, N2;stainless

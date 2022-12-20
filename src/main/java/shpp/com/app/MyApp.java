@@ -14,8 +14,6 @@ public class MyApp {
         receiver.receive();
         Calculate calculate = new Calculate();
         calculate.operation(receiver.getWorkpiece().getMaterial(), receiver.getWorkpiece());
-        logger.info("Cut time is : {}", calculate.getCutTime());
-        logger.info("Cut time is : {}", calculate.getGasConsumption());
         logger.info("End app ... ");
     }
 }

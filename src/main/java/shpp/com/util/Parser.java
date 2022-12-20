@@ -27,6 +27,7 @@ public class Parser {
                 arr[j] = Float.parseFloat(parseList.get(i)[j]);
             }
             floatList.add(arr);
+            arr = new Float[parseList.get(i).length];
         }
         return floatList;
     }

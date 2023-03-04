@@ -1,30 +1,31 @@
 package shpp.com.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import shpp.com.model.Material;
 import shpp.com.model.Workpiece;
 import shpp.com.util.CSVLoader;
 import shpp.com.util.Parser;
 import shpp.com.util.PropertiesLoader;
 
-import java.util.List;
-
+@Slf4j
 public class Calculate {
-    Float[] gasConsumption;
-    float cutTime;
-    private final Logger logger = LoggerFactory.getLogger(Calculate.class);
+
+    private Float[] gasConsumption;
+    private float cutTime;
+
+    private String gasType;
 
     public void operation(Material material, Workpiece workpiece) {
-        // аналіз і фільтр вхідних даних;
+        // analysis and filter of input data
         Float[] inputData = choiceDataFromList(getDataList(material), workpiece);
-        logger.info("input data is : {}, {}, {}", inputData[0], inputData[1], inputData[2]);
-        // розрахунок часу різання
+        log.info("input data is : {}, {}, {}", inputData[0], inputData[1], inputData[2]);
+        // calculation of cutting time
         this.cutTime = calculateCutTime(inputData, workpiece);
-        logger.info("Cut time is : {}", cutTime);
-        // розрахунок норми витрати газу
+        log.info("Cut time is : {}", cutTime);
+        // calculation of the rate of gas consumption
         this.gasConsumption = calculateGasConsumption(inputData, workpiece);
-        logger.info(getMessageGas(workpiece));
+        log.info(getMessageGas(workpiece));
     }
 
     private String getMessageGas(Workpiece workpiece){
@@ -51,7 +52,7 @@ public class Calculate {
                 }
             }
         } else {
-            logger.info("повернутися до початку програми!, або видати помилку");
+            log.info("return to the beginning of the program!, or issue an error");
         }
         return new Float[0];
     }
@@ -78,27 +79,42 @@ public class Calculate {
 
 
     private Float[] calculateGasConsumption(Float[] inputData, Workpiece workpiece) {
-        Float [] gas = new Float[3];
-        if(workpiece.getMaterial().equals(Material.CARBON)) {
+        /*
+         * gas[0] - O2
+         * gas[1] - N2
+         * gas[2] - F5
+         * gas[3] - H35
+         * gas[4] - AIR
+         */
+        Float[] gas = {0f, 0f, 0f, 0f, 0f};
+        if (workpiece.getMaterial().equals(Material.CARBON)) {
             gas[0] = cutTime * (float) (inputData[2] * 1.5 * 0.001);
-        } else if (workpiece.getMaterial().equals(Material.STAINLESS)){
-            if(workpiece.getThickness() >= 0.8 && workpiece.getThickness() <= 4 ||
-                    workpiece.getThickness() >= 10 && workpiece.getThickness() <= 12) {
-                gas[0] = cutTime * (float) (inputData[2] * 1.5 * 0.001);
-            } else if (workpiece.getThickness() > 4 && workpiece.getThickness() <= 8){
-                gas[0] = cutTime * (float) (inputData[2] * 1.5 * 0.001);
-                gas[1] = cutTime * (float) (31 * 1.5 * 0.001);
-            } else if(workpiece.getThickness() > 12 && workpiece.getThickness() <= 25){
-                gas[0] = cutTime * (float) (inputData[2] * 1.5 * 0.001);
-                gas[2] = cutTime * (float) (26 * 1.5 * 0.001);
+        } else if (workpiece.getMaterial().equals(Material.STAINLESS)) {
+            if (workpiece.getThickness() >= 0.8 && workpiece.getThickness() <= 4 ||
+                workpiece.getThickness() >= 10 && workpiece.getThickness() <= 12) {
+                gas[1] = cutTime * (float) (inputData[2] * 1.5 * 0.001);
+            } else if (workpiece.getThickness() > 4 && workpiece.getThickness() <= 8) {
+                gas[1] = cutTime * (float) (inputData[2] * 1.5 * 0.001);
+                gas[2] = cutTime * (float) (31 * 1.5 * 0.001);
+            } else if (workpiece.getThickness() > 12 && workpiece.getThickness() <= 25) {
+                gas[1] = cutTime * (float) (inputData[2] * 1.5 * 0.001);
+                gas[3] = cutTime * (float) (26 * 1.5 * 0.001);
             }
-        } else if (workpiece.getMaterial().equals(Material.ALUMINUM)){
-            gas[0] = (float) 0.0;
+        } else if (workpiece.getMaterial().equals(Material.ALUMINUM)) {
+            gas[4] = (float) 0.0;
         }
         return gas;
     }
 
+    public Float[] getGasConsumption() {
+        return gasConsumption;
+    }
+
     public float getCutTime() {
         return cutTime;
+    }
+
+    public String getGasType() {
+        return gasType;
     }
 }

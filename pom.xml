@@ -4,15 +4,15 @@
 
   <groupId>shpp.com.app</groupId>
   <artifactId>ThermalCut</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
   <packaging>jar</packaging>
 
   <name>thermalCut</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -38,6 +38,13 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>5.9.0</version>
       <scope>test</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.24</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -104,7 +111,7 @@
               <archive>
                 <manifest>
                   <addClasspath>true</addClasspath>
-                  <mainClass>shpp.com.shpp.com.app.MyApp</mainClass>
+                  <mainClass>shpp.com.app.MyApp</mainClass>
                   <classpathPrefix>lib/</classpathPrefix>
                 </manifest>
                 <manifestEntries>
@@ -138,7 +145,7 @@
               </formats>
               <archive>
                 <manifest>
-                  <mainClass>shpp.com.shpp.com.app.MyApp</mainClass>
+                  <mainClass>shpp.com.app.MyApp</mainClass>
                   <addClasspath>true</addClasspath>
                 </manifest>
               </archive>
@@ -171,7 +178,6 @@
             <filtering>true</filtering>
             <excludes>
               <exclude>**/app.properties</exclude>
-              <exclude>**/logback.xml</exclude>
             </excludes>
           </resource>
         </resources>

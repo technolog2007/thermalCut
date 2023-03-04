@@ -1,14 +1,9 @@
 package shpp.com.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-
-    private final Logger logger = LoggerFactory.getLogger(Parser.class);
 
     public List<String[]> parserCSV(List<String[]> list) {
         List<String[]> parsList = new ArrayList<>();

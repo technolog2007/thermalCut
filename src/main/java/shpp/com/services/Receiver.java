@@ -1,74 +1,74 @@
 package shpp.com.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Scanner;
+import lombok.extern.slf4j.Slf4j;
 import shpp.com.model.Material;
 import shpp.com.model.Workpiece;
 
-import java.util.Scanner;
-
+@Slf4j
 public class Receiver {
 
-    private Workpiece workpiece;
-    private final Scanner scannerIn = new Scanner(System.in);
+  private static Receiver receiver;
 
-    private final Logger logger = LoggerFactory.getLogger(Receiver.class);
+  private Workpiece workpiece;
+  private final Scanner scannerIn = new Scanner(System.in);
+  boolean flag;
 
-    public void receive() {
-        boolean flag = makeChoice();
-        if (flag) {
-            this.workpiece = new Workpiece().
-                    setThickness(receiveField("Thickness : ")).
-                    setCuttingLength(receiveField("Length : ")).
-                    setMaterial(receiveMaterial());
-        } else {
-            this.workpiece = new Workpiece().
-                    setThickness(receiveField("Thickness : ")).
-                    setWidth(receiveField("Width : ")).
-                    setLength(receiveField("Length : ")).
-                    setMaterial(receiveMaterial());
-        }
+  public static Receiver getReceiver() {
+    if (receiver == null) {
+      receiver = new Receiver();
     }
+    return receiver;
+  }
 
-    private boolean makeChoice() {
-        logger.info(" Do you want to use the calculation option based on the total length of the outline?" +
-                " Please input true or false! ");
-        return scannerIn.nextBoolean();
+  public void receive() {
+    if (this.flag) {
+      this.workpiece = new Workpiece().
+          setThickness(receiveField("Thickness : ")).
+          setCuttingLength(receiveField("Length : ")).
+          setMaterial(receiveMaterial());
+    } else {
+      this.workpiece = new Workpiece().
+          setThickness(receiveField("Thickness : ")).
+          setWidth(receiveField("Width : ")).
+          setLength(receiveField("Length : ")).
+          setMaterial(receiveMaterial());
     }
+  }
 
-    private Float receiveField(String receiveField) {
-        logger.info(receiveField);
-        return scannerIn.nextFloat();
-    }
+  private Float receiveField(String receiveField) {
+    log.info(receiveField);
+    return scannerIn.nextFloat();
+  }
 
-    private Material receiveMaterial() {
-        logger.info(" Material: ");
-        String material = scannerIn.next();
-        Material validateMaterial = checkMaterial(material);
-        if (validateMaterial == null) {
-            while (validateMaterial == null) {
-                logger.info(" Material: ");
-                material = scannerIn.next();
-                validateMaterial = checkMaterial(material);
-            }
-        }
-        return validateMaterial;
+  private Material receiveMaterial() {
+    log.info(" Material: ");
+    String material = scannerIn.next();
+    Material validateMaterial = checkMaterial(material);
+    if (validateMaterial == null) {
+      while (validateMaterial == null) {
+        log.info(" Material: ");
+        material = scannerIn.next();
+        validateMaterial = checkMaterial(material);
+      }
     }
+    return validateMaterial;
+  }
 
-    private Material checkMaterial(String material) {
-        switch (material) {
-            case "carbon":
-                return Material.CARBON;
-            case "stainless":
-                return Material.STAINLESS;
-            case "aluminum":
-                return Material.ALUMINUM;
-            default:
-                return null;
-        }
+  private Material checkMaterial(String material) {
+    switch (material) {
+      case "carbon":
+        return Material.CARBON;
+      case "stainless":
+        return Material.STAINLESS;
+      case "aluminum":
+        return Material.ALUMINUM;
+      default:
+        return null;
     }
+  }
 
-    public Workpiece getWorkpiece() {
-        return workpiece;
-    }
+  public Workpiece getWorkpiece() {
+    return workpiece;
+  }
 }

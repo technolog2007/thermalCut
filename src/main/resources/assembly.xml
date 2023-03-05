@@ -11,8 +11,11 @@
             <directory>${project.basedir}/src/main/resources</directory>
             <outputDirectory>/config/</outputDirectory>
             <includes>
-                <include>*.properties</include>
-                <include>logback.xml</include>
+              <include>*.properties</include>
+              <include>logback.xml</include>
+              <include>carbon.csv</include>
+              <include>stainless.csv</include>
+              <include>aluminum.csv</include>
             </includes>
         </fileSet>
         <fileSet>

@@ -4,9 +4,6 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import shpp.com.model.Material;
 import shpp.com.model.Workpiece;
-import shpp.com.util.CSVLoader;
-import shpp.com.util.Parser;
-import shpp.com.util.PropertiesLoader;
 
 @Slf4j
 public class Calculate {
@@ -14,11 +11,9 @@ public class Calculate {
     private Float[] gasConsumption;
     private float cutTime;
 
-    private String gasType;
-
-    public void operation(Material material, Workpiece workpiece) {
+    public void operation(List<Float[]> cutData, Workpiece workpiece) {
         // analysis and filter of input data
-        Float[] inputData = choiceDataFromList(getDataList(material), workpiece);
+        Float[] inputData = choiceDataFromList(cutData, workpiece);
         log.info("input data is : {}, {}, {}", inputData[0], inputData[1], inputData[2]);
         // calculation of cutting time
         this.cutTime = calculateCutTime(inputData, workpiece);
@@ -28,27 +23,29 @@ public class Calculate {
         log.info(getMessageGas(workpiece));
     }
 
-    private String getMessageGas(Workpiece workpiece){
+    private String getMessageGas(Workpiece workpiece) {
         String message = "";
-        if(workpiece.getMaterial().equals(Material.CARBON)){
+        if (workpiece.getMaterial().equals(Material.CARBON)) {
             message = "The rate of Oxygen (O2) consumption is : " + gasConsumption[0] + " m3";
-        } else if (workpiece.getMaterial().equals(Material.ALUMINUM)){
+        } else if (workpiece.getMaterial().equals(Material.ALUMINUM)) {
             message = "The rate of air consumption is : " + gasConsumption[0] + " m3";
-        } else if (workpiece.getMaterial().equals(Material.STAINLESS)){
+        } else if (workpiece.getMaterial().equals(Material.STAINLESS)) {
             message = "The rate of N2, F5, H35 consumption is : " +
-                    gasConsumption[0] + " , " +
-                    gasConsumption[1] + " , " +
-                    gasConsumption[2] + " , " + " m3";
+                gasConsumption[0] + " , " +
+                gasConsumption[1] + " , " +
+                gasConsumption[2] + " , " + " m3";
         }
         return message;
     }
 
     private Float[] choiceDataFromList(List<Float[]> dataList, Workpiece workpiece) {
         float thickness = workpiece.getThickness();
-        if (thickness > 0 && thickness < dataList.get(dataList.size() - 1)[0]) {
+        if (thickness > 0 && thickness <= dataList.get(dataList.size() - 1)[0]) {
             for (int i = 0; i < dataList.size() - 1; i++) {
                 if (thickness == dataList.get(i)[0]) {
                     return dataList.get(i);
+                } else if (thickness > dataList.get(i)[0] && thickness <= dataList.get(i + 1)[0]) {
+                    return dataList.get(i + 1);
                 }
             }
         } else {
@@ -57,23 +54,17 @@ public class Calculate {
         return new Float[0];
     }
 
-    private List<Float[]> getDataList(Material material) {
-        CSVLoader loader = new CSVLoader();
-        loader.load(new PropertiesLoader().loadProperties().getProperty(material.getMaterial()));
-        return new Parser().parserCSVToFloat(loader.getList());
-    }
-
     public float calculateCutTime(Float[] inputData, Workpiece workpiece) {
         float cutSpeed = inputData[1];
         float cutLength = getCuttingLength(workpiece);
-        return  (cutLength / cutSpeed) * (float) 1.3;
+        return (cutLength / cutSpeed) * (float) 1.3;
     }
 
     private float getCuttingLength(Workpiece workpiece) {
         if (workpiece.getCuttingLength() != null) {
             return workpiece.getCuttingLength();
         } else {
-            return workpiece.getLength() * workpiece.getWidth() * 2;
+            return (workpiece.getLength() + workpiece.getWidth()) * 2;
         }
     }
 
@@ -112,9 +103,5 @@ public class Calculate {
 
     public float getCutTime() {
         return cutTime;
-    }
-
-    public String getGasType() {
-        return gasType;
     }
 }

@@ -2,7 +2,9 @@ package shpp.com.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Parser {
 
     public List<String[]> parserCSV(List<String[]> list) {
@@ -17,12 +19,12 @@ public class Parser {
         List<String[]> parseList = parserCSV(list);
         List<Float[]> floatList = new ArrayList<>();
         Float[] arr = new Float[parseList.get(0).length];
-        for (int i = 1; i < parseList.size(); i++) {
-            for (int j = 0; j < parseList.get(i).length; j++) {
-                arr[j] = Float.parseFloat(parseList.get(i)[j]);
+        for (String[] strings : parseList) {
+            for (int j = 0; j < strings.length; j++) {
+                arr[j] = Float.parseFloat(strings[j]);
             }
             floatList.add(arr);
-            arr = new Float[parseList.get(i).length];
+            arr = new Float[strings.length];
         }
         return floatList;
     }

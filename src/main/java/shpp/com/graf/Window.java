@@ -3,6 +3,7 @@ package shpp.com.graf;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import shpp.com.model.Material;
 import shpp.com.model.Workpiece;
 import shpp.com.services.Calculate;
+import shpp.com.services.Receiver;
 
 @Slf4j
 public class Window {
@@ -28,14 +30,20 @@ public class Window {
   private JTextField gasN2;
   private JTextField gasF5;
   private JTextField gasH35;
-
   private JRadioButton chooseCuttingLength;
   private JRadioButton chooseDimension;
   ButtonGroup group;
-
   private static final String FONT = "Arial";
-
   JComboBox<Material> comboBox = new JComboBox<>(Material.values());
+  private List<Float[]> carbonData;
+  private List<Float[]> stainlessData;
+  private List<Float[]> aluminumData;
+
+  public void setReceiver(Receiver receiver) {
+    this.carbonData = receiver.getDataList(Material.CARBON);
+    this.stainlessData = receiver.getDataList(Material.STAINLESS);
+    this.aluminumData = receiver.getDataList(Material.ALUMINUM);
+  }
 
   public void createWindow() {
     // create jFrame
@@ -62,17 +70,17 @@ public class Window {
     // create label "Width"
     jFrame.add(createLabel("Width:", 40, 90, 100, 30));
     // create text field "fieldWidth"
-    this.width = createTextField(145, 90, 80, 30, 16);
+    this.width = createTextFieldForInput(145, 90, 80, 30, 16);
     jFrame.add(width);
     // create label "Length"
     jFrame.add(createLabel("Length:", 40, 130, 100, 30));
     // create text field "fieldLength"
-    this.length = createTextField(145, 130, 80, 30, 16);
+    this.length = createTextFieldForInput(145, 130, 80, 30, 16);
     jFrame.add(length);
     // create label "CuttingLength"
     jFrame.add(createLabel("Cutting length:", 40, 170, 150, 30));
     // create text field "fieldCuttingLength"
-    this.cuttingLength = createTextField(145, 170, 80, 30, 16);
+    this.cuttingLength = createTextFieldForInput(145, 170, 80, 30, 16);
     jFrame.add(cuttingLength);
     // create radio button "chooseCuttingLength"
     this.chooseCuttingLength = new JRadioButton();
@@ -148,27 +156,38 @@ public class Window {
   class ButtonListener implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
-      // add input date for calculate
+      calculate(createWorkpiece());
+    }
+
+    private Workpiece createWorkpiece() {
       Workpiece workpiece = new Workpiece();
       if (chooseDimension.isSelected()) {
-        workpiece = setDimension(thickness.getText(), width.getText(), length.getText());
+        workpiece = setDimension(checkComma(thickness.getText()), checkComma(width.getText()),
+            checkComma(length.getText()));
       } else if (chooseCuttingLength.isSelected()) {
-        workpiece = createCuttingLength(thickness.getText(), cuttingLength.getText());
+        workpiece = createCuttingLength(checkComma(thickness.getText()),
+            checkComma(cuttingLength.getText()));
       }
       log.warn("Material is : {}", comboBox.getSelectedItem());
       workpiece.setMaterial((Material) comboBox.getSelectedItem());
-      // calculate cut time and gas
+      return workpiece;
+    }
+
+    private void calculate(Workpiece workpiece) {
       Calculate calculate = new Calculate();
-      calculate.operation(workpiece.getMaterial(), workpiece);
+
+      switch (workpiece.getMaterial()) {
+        case CARBON -> calculate.operation(carbonData, workpiece);
+        case STAINLESS -> calculate.operation(stainlessData, workpiece);
+        case ALUMINUM -> calculate.operation(aluminumData, workpiece);
+      }
       cutTime.setText(rounding(calculate.getCutTime()) + "");
       checkGasConsumption(calculate);
     }
 
     private Workpiece createCuttingLength(String thickness, String summLength) {
       Float workpieceThickness = parserStringToFloat(thickness);
-      log.info("workpiece Thickness is: {}", workpieceThickness);
       Float workpieceCutiingLength = Float.parseFloat(summLength);
-      log.info("cuttingLength is: {}", workpieceCutiingLength);
       return new Workpiece()
           .setThickness(workpieceThickness)
           .setCuttingLength(workpieceCutiingLength);
@@ -176,11 +195,8 @@ public class Window {
 
     private Workpiece setDimension(String thickness, String width, String length) {
       Float workpieceThickness = parserStringToFloat(thickness);
-      log.info("workpiece Thickness is: {}", workpieceThickness);
       Float workpieceWidth = parserStringToFloat(width);
-      log.info("workpiece Width is: {}", workpieceWidth);
       Float workpieceLength = parserStringToFloat(length);
-      log.info("workpiece Length is: {}", workpieceLength);
       return new Workpiece()
           .setThickness(workpieceThickness)
           .setWidth(workpieceWidth)
@@ -208,6 +224,10 @@ public class Window {
 
     private float rounding(float number) {
       return (float) (Math.round(number * 1000.0) / 1000.0);
+    }
+
+    private String checkComma(String input) {
+      return input.replace(",", ".");
     }
   }
 

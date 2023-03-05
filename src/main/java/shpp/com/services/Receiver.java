@@ -1,18 +1,20 @@
 package shpp.com.services;
 
-import java.util.Scanner;
+import java.io.File;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import shpp.com.app.MyApp;
 import shpp.com.model.Material;
-import shpp.com.model.Workpiece;
+import shpp.com.util.CSVLoader;
+import shpp.com.util.Parser;
+import shpp.com.util.PropertiesLoader;
 
 @Slf4j
 public class Receiver {
 
   private static Receiver receiver;
 
-  private Workpiece workpiece;
-  private final Scanner scannerIn = new Scanner(System.in);
-  boolean flag;
+  private static final String IDEA_FILE_PATH = "src/main/resources/";
 
   public static Receiver getReceiver() {
     if (receiver == null) {
@@ -21,54 +23,22 @@ public class Receiver {
     return receiver;
   }
 
-  public void receive() {
-    if (this.flag) {
-      this.workpiece = new Workpiece().
-          setThickness(receiveField("Thickness : ")).
-          setCuttingLength(receiveField("Length : ")).
-          setMaterial(receiveMaterial());
-    } else {
-      this.workpiece = new Workpiece().
-          setThickness(receiveField("Thickness : ")).
-          setWidth(receiveField("Width : ")).
-          setLength(receiveField("Length : ")).
-          setMaterial(receiveMaterial());
+  public List<Float[]> getDataList(Material material) {
+    log.info(" Start receive data for {}", material);
+    CSVLoader loader = new CSVLoader();
+    String fileName = new PropertiesLoader().loadProperties().getProperty(material.getMaterial());
+    try {
+      loader.load(IDEA_FILE_PATH + fileName);
+    } catch (Exception e) {
+      File jarPath = new File(MyApp.class
+          .getProtectionDomain()
+          .getCodeSource()
+          .getLocation()
+          .getPath());
+      String filePath = jarPath.getParentFile().getPath();
+      log.warn("*****JAR PATH : {}", filePath + "/config/" + fileName);
+      loader.load(filePath + "/config/" + fileName);
     }
-  }
-
-  private Float receiveField(String receiveField) {
-    log.info(receiveField);
-    return scannerIn.nextFloat();
-  }
-
-  private Material receiveMaterial() {
-    log.info(" Material: ");
-    String material = scannerIn.next();
-    Material validateMaterial = checkMaterial(material);
-    if (validateMaterial == null) {
-      while (validateMaterial == null) {
-        log.info(" Material: ");
-        material = scannerIn.next();
-        validateMaterial = checkMaterial(material);
-      }
-    }
-    return validateMaterial;
-  }
-
-  private Material checkMaterial(String material) {
-    switch (material) {
-      case "carbon":
-        return Material.CARBON;
-      case "stainless":
-        return Material.STAINLESS;
-      case "aluminum":
-        return Material.ALUMINUM;
-      default:
-        return null;
-    }
-  }
-
-  public Workpiece getWorkpiece() {
-    return workpiece;
+    return new Parser().parserCSVToFloat(loader.getList());
   }
 }

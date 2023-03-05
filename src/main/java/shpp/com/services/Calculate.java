@@ -54,7 +54,7 @@ public class Calculate {
         return new Float[0];
     }
 
-    public float calculateCutTime(Float[] inputData, Workpiece workpiece) {
+    private float calculateCutTime(Float[] inputData, Workpiece workpiece) {
         float cutSpeed = inputData[1];
         float cutLength = getCuttingLength(workpiece);
         return (cutLength / cutSpeed) * (float) 1.3;

@@ -1,5 +1,6 @@
 package shpp.com.graf;
 
+import jakarta.validation.ValidationException;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,6 @@ public class Window {
   private JTextField gasH35;
   private JRadioButton chooseCuttingLength;
   private JRadioButton chooseDimension;
-  ButtonGroup group;
   private static final String FONT = "Arial";
   JComboBox<Material> comboBox = new JComboBox<>(Material.values());
   private List<Float[]> carbonData;
@@ -64,7 +65,7 @@ public class Window {
     this.chooseDimension = new JRadioButton();
     chooseDimension.setBounds(13, 15, 20, 20);
     chooseDimension.setSelected(true);
-    this.group = new ButtonGroup();
+    ButtonGroup group = new ButtonGroup();
     group.add(chooseDimension);
     jFrame.add(chooseDimension);
     // create label "Width"
@@ -86,7 +87,6 @@ public class Window {
     this.chooseCuttingLength = new JRadioButton();
     chooseCuttingLength.setBounds(13, 175, 20, 20);
     group.add(chooseCuttingLength);
-
     jFrame.add(chooseCuttingLength);
     // create button "calculate"
     JButton calculate = new JButton();
@@ -138,7 +138,7 @@ public class Window {
   }
 
   private JTextField createTextFieldForInput(int x, int y, int width, int height, int fontSize) {
-    JTextField textField = new JTextField("0");
+    JTextField textField = new JTextField();
     textField.setBounds(x, y, width, height);
     textField.setFont(new Font(FONT, Font.PLAIN, fontSize));
     textField.setHorizontalAlignment(JTextField.CENTER);
@@ -204,11 +204,17 @@ public class Window {
     }
 
     private Float parserStringToFloat(String dimension) {
-      Float result = null;
+      Float result;
       try {
         result = Float.parseFloat(dimension);
       } catch (NumberFormatException e) {
         log.error("Not valid input data: {}", dimension);
+        JOptionPane.showMessageDialog(null,
+            "Введіть валідні значення!",
+            "Попередження",
+            JOptionPane.WARNING_MESSAGE
+        );
+        throw new ValidationException();
       }
       return result;
     }
@@ -228,6 +234,21 @@ public class Window {
 
     private String checkComma(String input) {
       return input.replace(",", ".");
+    }
+
+    private boolean validateDimensionTextData(String thickness, String length, String width) {
+      String dotTemplate = "\\d.?\\d";
+      String comaTemplate = "\\d,?\\d";
+      return thickness.matches(dotTemplate) || thickness.matches(comaTemplate) &&
+          length.matches(dotTemplate) || length.matches(comaTemplate) &&
+          width.matches(dotTemplate) || width.matches(comaTemplate);
+    }
+
+    private boolean validateDimensionTextData(String thickness, String summLength) {
+      String dotTemplate = "\\d.?\\d";
+      String comaTemplate = "\\d,?\\d";
+      return thickness.matches(dotTemplate) || thickness.matches(comaTemplate) &&
+          summLength.matches(dotTemplate) || summLength.matches(comaTemplate);
     }
   }
 

@@ -9,6 +9,7 @@ public class Workpiece {
     private Material material;
 
     public Workpiece(float thickness, float width, float length, Material material) {
+
         this.thickness = thickness;
         this.width = width;
         this.length = length;

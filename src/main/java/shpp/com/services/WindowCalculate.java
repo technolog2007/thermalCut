@@ -36,5 +36,4 @@ public class WindowCalculate {
   private float rounding(float number) {
     return (float) (Math.round(number * 1000.0) / 1000.0);
   }
-
 }

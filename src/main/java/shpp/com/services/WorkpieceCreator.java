@@ -64,5 +64,4 @@ public class WorkpieceCreator {
         .setThickness(workpieceThickness)
         .setCuttingLength(workpieceCuttingLength);
   }
-
 }

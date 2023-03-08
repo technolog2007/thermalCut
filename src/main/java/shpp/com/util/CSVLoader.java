@@ -24,4 +24,5 @@ public class CSVLoader {
   public List<String[]> getList() {
     return list;
   }
+
 }

@@ -10,4 +10,5 @@ public class MyApp {
         window.setReceiver(Receiver.getReceiver());
         window.createWindow();
     }
+
 }

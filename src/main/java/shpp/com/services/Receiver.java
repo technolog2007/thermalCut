@@ -42,4 +42,5 @@ public class Receiver {
     }
     return new Parser().parserCSVToFloat(loader.getList());
   }
+
 }

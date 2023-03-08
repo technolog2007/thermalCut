@@ -30,6 +30,7 @@ public class Receiver {
     try {
       loader.load(IDEA_FILE_PATH + fileName);
     } catch (Exception e) {
+      log.warn("Start load ... ");
       File jarPath = new File(MyApp.class
           .getProtectionDomain()
           .getCodeSource()
@@ -41,4 +42,5 @@ public class Receiver {
     }
     return new Parser().parserCSVToFloat(loader.getList());
   }
+
 }

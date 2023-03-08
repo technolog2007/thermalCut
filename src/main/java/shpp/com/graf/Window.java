@@ -14,8 +14,9 @@ import javax.swing.JTextField;
 import lombok.extern.slf4j.Slf4j;
 import shpp.com.model.Material;
 import shpp.com.model.Workpiece;
-import shpp.com.services.Calculate;
 import shpp.com.services.Receiver;
+import shpp.com.services.WindowCalculate;
+import shpp.com.services.WorkpieceCreator;
 
 @Slf4j
 public class Window {
@@ -32,7 +33,6 @@ public class Window {
   private JTextField gasH35;
   private JRadioButton chooseCuttingLength;
   private JRadioButton chooseDimension;
-  ButtonGroup group;
   private static final String FONT = "Arial";
   JComboBox<Material> comboBox = new JComboBox<>(Material.values());
   private List<Float[]> carbonData;
@@ -64,7 +64,7 @@ public class Window {
     this.chooseDimension = new JRadioButton();
     chooseDimension.setBounds(13, 15, 20, 20);
     chooseDimension.setSelected(true);
-    this.group = new ButtonGroup();
+    ButtonGroup group = new ButtonGroup();
     group.add(chooseDimension);
     jFrame.add(chooseDimension);
     // create label "Width"
@@ -86,7 +86,6 @@ public class Window {
     this.chooseCuttingLength = new JRadioButton();
     chooseCuttingLength.setBounds(13, 175, 20, 20);
     group.add(chooseCuttingLength);
-
     jFrame.add(chooseCuttingLength);
     // create button "calculate"
     JButton calculate = new JButton();
@@ -156,78 +155,12 @@ public class Window {
   class ButtonListener implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
-      calculate(createWorkpiece());
-    }
-
-    private Workpiece createWorkpiece() {
-      Workpiece workpiece = new Workpiece();
-      if (chooseDimension.isSelected()) {
-        workpiece = setDimension(checkComma(thickness.getText()), checkComma(width.getText()),
-            checkComma(length.getText()));
-      } else if (chooseCuttingLength.isSelected()) {
-        workpiece = createCuttingLength(checkComma(thickness.getText()),
-            checkComma(cuttingLength.getText()));
-      }
-      log.warn("Material is : {}", comboBox.getSelectedItem());
-      workpiece.setMaterial((Material) comboBox.getSelectedItem());
-      return workpiece;
-    }
-
-    private void calculate(Workpiece workpiece) {
-      Calculate calculate = new Calculate();
-
-      switch (workpiece.getMaterial()) {
-        case CARBON -> calculate.operation(carbonData, workpiece);
-        case STAINLESS -> calculate.operation(stainlessData, workpiece);
-        case ALUMINUM -> calculate.operation(aluminumData, workpiece);
-      }
-      cutTime.setText(rounding(calculate.getCutTime()) + "");
-      checkGasConsumption(calculate);
-    }
-
-    private Workpiece createCuttingLength(String thickness, String summLength) {
-      Float workpieceThickness = parserStringToFloat(thickness);
-      Float workpieceCutiingLength = Float.parseFloat(summLength);
-      return new Workpiece()
-          .setThickness(workpieceThickness)
-          .setCuttingLength(workpieceCutiingLength);
-    }
-
-    private Workpiece setDimension(String thickness, String width, String length) {
-      Float workpieceThickness = parserStringToFloat(thickness);
-      Float workpieceWidth = parserStringToFloat(width);
-      Float workpieceLength = parserStringToFloat(length);
-      return new Workpiece()
-          .setThickness(workpieceThickness)
-          .setWidth(workpieceWidth)
-          .setLength(workpieceLength);
-    }
-
-    private Float parserStringToFloat(String dimension) {
-      Float result = null;
-      try {
-        result = Float.parseFloat(dimension);
-      } catch (NumberFormatException e) {
-        log.error("Not valid input data: {}", dimension);
-      }
-      return result;
-    }
-
-    private void checkGasConsumption(Calculate calculate) {
-      Float[] gasConsumption = calculate.getGasConsumption();
-      gasO2.setText(rounding(gasConsumption[0]) + "");
-      gasN2.setText(rounding(gasConsumption[1]) + "");
-      gasF5.setText(rounding(gasConsumption[2]) + "");
-      gasH35.setText(rounding(gasConsumption[3]) + "");
-      gasAir.setText(rounding(gasConsumption[4]) + "");
-    }
-
-    private float rounding(float number) {
-      return (float) (Math.round(number * 1000.0) / 1000.0);
-    }
-
-    private String checkComma(String input) {
-      return input.replace(",", ".");
+      WorkpieceCreator creator = new WorkpieceCreator();
+      Workpiece workpiece = creator.createWorkpiece(thickness, width, length, cuttingLength,
+          comboBox, chooseCuttingLength, chooseDimension);
+      WindowCalculate windowCalculate = new WindowCalculate();
+      windowCalculate.calculate(workpiece, carbonData, stainlessData, aluminumData, cutTime,
+          gasO2, gasAir, gasN2, gasF5, gasH35);
     }
   }
 

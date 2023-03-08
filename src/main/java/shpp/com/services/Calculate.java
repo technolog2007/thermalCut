@@ -104,4 +104,5 @@ public class Calculate {
     public float getCutTime() {
         return cutTime;
     }
+
 }

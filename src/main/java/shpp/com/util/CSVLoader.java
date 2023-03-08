@@ -2,7 +2,6 @@ package shpp.com.util;
 
 import com.opencsv.CSVReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -19,9 +18,6 @@ public class CSVLoader {
     try (CSVReader reader = new CSVReader(new FileReader(fileName))) {
       list = reader.readAll();
       logger.info("CSV file load successful!");
-    } catch (IOException e) {
-      logger.info("ERROR! Please check CSV-FILE!");
-      logger.info(e.getMessage());
     }
   }
 

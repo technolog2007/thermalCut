@@ -11,9 +11,12 @@ public class WindowCalculate {
       JTextField gasN2, JTextField gasF5, JTextField gasH35) {
     Calculate calculate = new Calculate();
     switch (workpiece.getMaterial()) {
-      case CARBON -> calculate.operation(carbonData, workpiece);
-      case STAINLESS -> calculate.operation(stainlessData, workpiece);
-      case ALUMINUM -> calculate.operation(aluminumData, workpiece);
+      case CARBON:
+        calculate.operation(carbonData, workpiece);
+      case STAINLESS:
+        calculate.operation(stainlessData, workpiece);
+      case ALUMINUM:
+        calculate.operation(aluminumData, workpiece);
     }
     cutTime.setText(rounding(calculate.getCutTime()) + "");
     checkGasConsumption(calculate, gasO2, gasAir,
